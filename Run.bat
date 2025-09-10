@@ -1,1 +1,22 @@
-pip install 
+pip install subprocess
+pip install sys
+pip install socket
+pip install fcntl
+pip install struct
+pip install ipaddress
+pip install scapy.all 
+pip install ARP
+pip install Ether
+pip install srp
+pip install conf
+pip install threading
+pip install tkinter as tk
+pip install tkinter 
+pip install ttk
+pip install scrolledtext
+pip install messagebox
+pip install simpledialog
+pip install filedialog
+pip install paramiko
+pip install platform
+pip install re
